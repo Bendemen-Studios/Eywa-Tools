@@ -9,6 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
+import org.bukkit.event.inventory.PrepareGrindstoneEvent;
 import org.bukkit.event.inventory.PrepareSmithingEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -113,6 +114,16 @@ public final class EywaTools extends JavaPlugin implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPrepareAnvil(PrepareAnvilEvent event) {
         if (isBlocked(event.getInventory().getFirstItem())) event.setResult(null);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPrepareGrindstone(PrepareGrindstoneEvent event) {
+        // Grindstone input slots are 0 and 1. Suppress the output if either
+        // input is a protected tool so its enchantments cannot be removed.
+        if (isBlocked(event.getInventory().getItem(0))
+                || isBlocked(event.getInventory().getItem(1))) {
+            event.setResult(null);
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
