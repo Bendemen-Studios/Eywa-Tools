@@ -1,0 +1,12 @@
+# EywaTools configuration
+# List Oraxen item IDs that must not be enchanted or modified in anvils/smithing tables.
+enchanting-disabled:
+  - unobtanium_pickaxe
+
+# Optional fallback: exact plain display names (without legacy/color formatting).
+match-display-name-fallback: true
+blocked-display-names:
+  - "Unobtanium Pickaxe"
+
+messages:
+  enchanting-disabled: "&cYou cannot enchant this tool."
