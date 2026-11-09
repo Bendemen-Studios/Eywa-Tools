@@ -1,8 +1,17 @@
 name: EywaTools
-version: 1.0.0
+version: 1.1.0
 main: com.eywamc.eywatools.EywaTools
 api-version: '26.3'
 author: Bendemen Studios
 description: Custom tool protections and enchantment controls for EywaMC.
 softdepend:
   - Enchantify
+commands:
+  eywatools:
+    description: Open the EywaTools blocked-items editor.
+    usage: /eywatools [gui|reload]
+    permission: eywatools.admin
+permissions:
+  eywatools.admin:
+    description: Allows editing the blocked tools list.
+    default: op
