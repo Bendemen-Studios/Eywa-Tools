@@ -4,3 +4,5 @@ main: com.eywamc.eywatools.EywaTools
 api-version: '26.3'
 author: Bendemen Studios
 description: Custom tool protections and enchantment controls for EywaMC.
+softdepend:
+  - Enchantify
