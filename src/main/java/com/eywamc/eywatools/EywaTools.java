@@ -2,6 +2,7 @@ package com.eywamc.eywatools;
 
 import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -12,6 +13,7 @@ import org.bukkit.event.inventory.PrepareSmithingEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class EywaTools extends JavaPlugin implements Listener {
@@ -22,6 +24,7 @@ public final class EywaTools extends JavaPlugin implements Listener {
         saveDefaultConfig();
         toolIdKey = new NamespacedKey(this, "tool_id");
         getServer().getPluginManager().registerEvents(this, this);
+        registerEnchantifyProtection();
         getLogger().info("EywaTools enabled.");
     }
 
@@ -44,6 +47,51 @@ public final class EywaTools extends JavaPlugin implements Listener {
         String message = getConfig().getString("messages.enchanting-disabled",
                 "&cYou cannot enchant this tool.");
         player.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
+    }
+
+    /*
+     * Enchantify is an optional plugin. Register its cancellable events by
+     * reflection so EywaTools can still load when Enchantify is not installed.
+     */
+    private void registerEnchantifyProtection() {
+        Plugin enchantify = getServer().getPluginManager().getPlugin("Enchantify");
+        if (enchantify == null || !enchantify.isEnabled()) {
+            getLogger().info("Enchantify not found; custom-enchantment protection is inactive.");
+            return;
+        }
+
+        registerEnchantifyEvent(enchantify,
+                "com.enchantify.api.events.EnchantApplyEvent", "apply");
+        registerEnchantifyEvent(enchantify,
+                "com.enchantify.api.events.EnchantRemoveEvent", "remove");
+    }
+
+    private void registerEnchantifyEvent(Plugin enchantify, String className, String action) {
+        try {
+            Class<?> loaded = Class.forName(className, true, enchantify.getClass().getClassLoader());
+            Class<? extends Event> eventClass = loaded.asSubclass(Event.class);
+            getServer().getPluginManager().registerEvent(
+                    eventClass,
+                    this,
+                    EventPriority.HIGHEST,
+                    (listener, event) -> {
+                        try {
+                            ItemStack item = (ItemStack) eventClass.getMethod("getItem").invoke(event);
+                            if (!isBlocked(item)) return;
+                            eventClass.getMethod("setCancelled", boolean.class).invoke(event, true);
+                        } catch (ReflectiveOperationException exception) {
+                            getLogger().warning("Could not inspect Enchantify " + action
+                                    + " event: " + exception.getMessage());
+                        }
+                    },
+                    this,
+                    true
+            );
+            getLogger().info("Enchantify " + action + " protection registered.");
+        } catch (ClassNotFoundException | ClassCastException exception) {
+            getLogger().warning("Enchantify " + action + " event was not found; "
+                    + "custom-enchantment protection may be incomplete.");
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
