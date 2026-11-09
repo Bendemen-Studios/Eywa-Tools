@@ -2,10 +2,9 @@ package com.eywamc.eywatools;
 
 import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
+import org.bukkit.Listener;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
@@ -15,15 +14,13 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.List;
-
 public final class EywaTools extends JavaPlugin implements Listener {
-    private NamespacedKey oraxenIdKey;
+    private NamespacedKey toolIdKey;
 
     @Override
     public void onEnable() {
         saveDefaultConfig();
-        oraxenIdKey = new NamespacedKey(this, "tool_id");
+        toolIdKey = new NamespacedKey(this, "tool_id");
         getServer().getPluginManager().registerEvents(this, this);
         getLogger().info("EywaTools enabled.");
     }
@@ -31,12 +28,8 @@ public final class EywaTools extends JavaPlugin implements Listener {
     private boolean isBlocked(ItemStack item) {
         if (item == null || item.getType().isAir() || !item.hasItemMeta()) return false;
         ItemMeta meta = item.getItemMeta();
-
-        // Oraxen stores its custom item identity in persistent item data. Check common
-        // Oraxen identifier key namespaced to this plugin only when present as a string;
-        // display-name fallback keeps the default setup usable out of the box.
-        String customId = meta.getPersistentDataContainer().get(oraxenIdKey, PersistentDataType.STRING);
-        if (customId != null && getConfig().getStringList("enchanting-disabled").contains(customId)) return true;
+        String id = meta.getPersistentDataContainer().get(toolIdKey, PersistentDataType.STRING);
+        if (id != null && getConfig().getStringList("enchanting-disabled").contains(id)) return true;
 
         if (getConfig().getBoolean("match-display-name-fallback", true) && meta.hasDisplayName()) {
             String plain = ChatColor.stripColor(meta.getDisplayName());
@@ -47,8 +40,9 @@ public final class EywaTools extends JavaPlugin implements Listener {
         return false;
     }
 
-    private void notifyBlocked(org.bukkit.entity.Player player) {
-        String message = getConfig().getString("messages.enchanting-disabled", "&cYou cannot enchant this tool.");
+    private void sendBlockedMessage(org.bukkit.entity.Player player) {
+        String message = getConfig().getString("messages.enchanting-disabled",
+                "&cYou cannot enchant this tool.");
         player.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
     }
 
@@ -56,7 +50,7 @@ public final class EywaTools extends JavaPlugin implements Listener {
     public void onPrepareEnchant(PrepareItemEnchantEvent event) {
         if (isBlocked(event.getItem())) {
             event.setCancelled(true);
-            notifyBlocked(event.getEnchanter());
+            sendBlockedMessage(event.getEnchanter());
         }
     }
 
@@ -64,18 +58,17 @@ public final class EywaTools extends JavaPlugin implements Listener {
     public void onEnchant(EnchantItemEvent event) {
         if (isBlocked(event.getItem())) {
             event.setCancelled(true);
-            notifyBlocked(event.getEnchanter());
+            sendBlockedMessage(event.getEnchanter());
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onAnvil(PrepareAnvilEvent event) {
+    public void onPrepareAnvil(PrepareAnvilEvent event) {
         if (isBlocked(event.getInventory().getFirstItem())) event.setResult(null);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onSmithing(PrepareSmithingEvent event) {
-        // Slot 1 is the base/input item in a smithing table.
+    public void onPrepareSmithing(PrepareSmithingEvent event) {
         if (isBlocked(event.getInventory().getItem(1))) event.setResult(null);
     }
 }

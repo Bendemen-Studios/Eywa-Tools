@@ -1,1 +1,3 @@
-target/\n.idea/\n*.iml\n
+target/
+.idea/
+*.iml
