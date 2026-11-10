@@ -205,12 +205,16 @@ public final class EywaTools extends JavaPlugin implements Listener {
             target = player.getInventory().getItemInMainHand();
         }
 
-        if (!isBlocked(target)) {
-            player.sendMessage(color(getConfig().getString("messages.repair-not-blocked", "&cThe Repair Stone only works on tools registered in the Blocked Tools GUI.")));
+        if (target == null || target.getType().isAir() || !target.hasItemMeta()) {
+            player.sendMessage(color(getConfig().getString("messages.repair-invalid-target", "&cHold a repairable tool or piece of armor in your other hand.")));
             return;
         }
         ItemMeta targetMeta = target.getItemMeta();
-        if (!(targetMeta instanceof Damageable damageable) || damageable.getDamage() <= 0) {
+        if (!(targetMeta instanceof Damageable damageable)) {
+            player.sendMessage(color(getConfig().getString("messages.repair-invalid-target", "&cHold a repairable tool or piece of armor in your other hand.")));
+            return;
+        }
+        if (damageable.getDamage() <= 0) {
             player.sendMessage(color(getConfig().getString("messages.repair-not-damaged", "&eThis tool does not need repairing.")));
             return;
         }
