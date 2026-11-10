@@ -11,8 +11,9 @@ repair-stone:
   material: AMETHYST_SHARD
   name: "&b&lEywaMC Repair Stone"
   lore:
-    - "&7Right-click while holding any damaged tool or armor"
-    - "&7in your other hand to fully repair it."
+    - "&7Hold this stone in one hand."
+    - "&7Hold a damaged tool or armor in your other hand."
+    - "&7Right-click to restore it to full durability."
     - "&8Consumed on use"
 
 messages:
