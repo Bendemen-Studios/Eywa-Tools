@@ -1,5 +1,5 @@
 name: EywaTools
-version: 1.2.0
+version: 1.2.1
 main: com.eywamc.eywatools.EywaTools
 api-version: '26.3'
 author: Bendemen Studios
