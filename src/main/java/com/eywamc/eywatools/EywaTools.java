@@ -177,7 +177,7 @@ public final class EywaTools extends JavaPlugin implements Listener {
         ItemMeta meta = stone.getItemMeta();
         meta.setDisplayName(color(getConfig().getString("repair-stone.name", "&b&lEywaMC Repair Stone")));
         List<String> lore = getConfig().getStringList("repair-stone.lore");
-        if (lore.isEmpty()) lore = List.of("&7Right-click while holding a blocked tool", "&7in your other hand to fully repair it.", "&8Consumed on use");
+        if (lore.isEmpty()) lore = List.of("&7Hold this stone in one hand.", "&7Hold a damaged tool or armor in your other hand.", "&7Right-click to restore it to full durability.", "&8Consumed on use");
         meta.setLore(lore.stream().map(this::color).toList());
         meta.getPersistentDataContainer().set(repairStoneKey, PersistentDataType.BYTE, (byte) 1);
         stone.setItemMeta(meta);
