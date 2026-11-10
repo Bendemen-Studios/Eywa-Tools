@@ -11,12 +11,12 @@ repair-stone:
   material: AMETHYST_SHARD
   name: "&b&lEywaMC Repair Stone"
   lore:
-    - "&7Right-click while holding a blocked tool"
+    - "&7Right-click while holding any damaged tool or armor"
     - "&7in your other hand to fully repair it."
     - "&8Consumed on use"
 
 messages:
   enchanting-disabled: "&cYou cannot enchant this tool."
-  repair-not-blocked: "&cThe Repair Stone only works on tools registered in the Blocked Tools GUI."
-  repair-not-damaged: "&eThis tool does not need repairing."
-  repair-success: "&aYour blocked tool has been fully repaired!"
+  repair-invalid-target: "&cHold a repairable tool or piece of armor in your other hand."
+  repair-not-damaged: "&eThis item does not need repairing."
+  repair-success: "&aYour item has been fully repaired!"
