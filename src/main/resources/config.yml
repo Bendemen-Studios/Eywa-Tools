@@ -7,5 +7,16 @@ match-display-name-fallback: true
 blocked-display-names:
   - "Unobtanium Pickaxe"
 
+repair-stone:
+  material: AMETHYST_SHARD
+  name: "&b&lEywaMC Repair Stone"
+  lore:
+    - "&7Right-click while holding a blocked tool"
+    - "&7in your other hand to fully repair it."
+    - "&8Consumed on use"
+
 messages:
   enchanting-disabled: "&cYou cannot enchant this tool."
+  repair-not-blocked: "&cThe Repair Stone only works on tools registered in the Blocked Tools GUI."
+  repair-not-damaged: "&eThis tool does not need repairing."
+  repair-success: "&aYour blocked tool has been fully repaired!"
